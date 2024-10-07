@@ -8,64 +8,74 @@
 <%@page import="team.TeamMgr"%>
 <%@page import="java.util.Vector"%>
 <%@page import="DB.MUtil"%>
-<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <jsp:useBean id="login" scope="session" class="user.UserBean" />
 <jsp:useBean id="teamMgr" class="team.TeamMgr" />
 <jsp:useBean id="teamBean" class="team.TeamBean" />
 
 <%
-    // POST로 전달된 teamNum을 세션에 저장 (세션에 없을 경우에만 저장)
-    int teamNum = MUtil.parseInt(request, "teamNum", 0); // 폼에서 받은 값이 없으면 0
-    if (teamNum == 0) {
-        teamNum = (Integer) session.getAttribute("teamNum"); // 세션에서 팀 번호 가져오기
-    } else {
-        session.setAttribute("teamNum", teamNum); // 세션에 팀 번호 저장
-    }
-    
-    // 팀 정보와 선수 명단 가져오기
-    TeamBean teamInfo = teamMgr.getTeam(teamNum);
-    PlayerMgr playerMgr = new PlayerMgr();
-    Vector<PlayerBean> playerList = playerMgr.TeamPlayers(teamNum);
+// POST로 전달된 teamNum을 세션에 저장 (세션에 없을 경우에만 저장)
+int teamNum = MUtil.parseInt(request, "teamNum", 0); // 폼에서 받은 값이 없으면 0
+if (teamNum == 0) {
+	teamNum = (Integer) session.getAttribute("teamNum"); // 세션에서 팀 번호 가져오기
+} else {
+	session.setAttribute("teamNum", teamNum); // 세션에 팀 번호 저장
+}
 
-    HeadcoachMgr coachMgr = new HeadcoachMgr();
-    HeadcoachBean coachList = coachMgr.getHeadcoach(teamNum);
+// 팀 정보와 선수 명단 가져오기
+TeamBean teamInfo = teamMgr.getTeam(teamNum);
+PlayerMgr playerMgr = new PlayerMgr();
+Vector<PlayerBean> playerList = playerMgr.TeamPlayers(teamNum);
 
-    Set<String> positionList = new HashSet<>();
-    for (PlayerBean player : playerList) {
-        positionList.add(player.getPOSITION());
-    }
+HeadcoachMgr coachMgr = new HeadcoachMgr();
+HeadcoachBean coachList = coachMgr.getHeadcoach(teamNum);
+
+Set<String> positionList = new HashSet<>();
+for (PlayerBean player : playerList) {
+	positionList.add(player.getPOSITION());
+}
 %>
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title><%=teamInfo.getTEAM_NAME() %></title>
-	<link rel="stylesheet" href=".././assets/css/style.css">
-	<link rel="stylesheet" href=".././assets/css/adminStyle.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%=teamInfo.getTEAM_NAME()%></title>
+<link rel="stylesheet" href=".././assets/css/style.css">
+<link rel="stylesheet" href=".././assets/css/adminStyle.css">
 </head>
 <body>
-<header class="header header_logo">
-		<a style="cursor: pointer" onclick="goMain()"><img src=".././assets/images/sportrip_logo.png" alt="sportrip 로고" id="logo_img"></a>
-	    <a href=".././sport/sport_main.jsp" style="margin-left: 20px; margin-right: 20px;">
-	    <img src=".././assets/images/sport_logo<%=teamInfo.getSPORT_NUM()%>.svg" alt="리그" id="league_logo_img"></a>
-	    <div style="position: absolute; left: 50%; transform: translateX(-50%);" class="img-box">
-	        <img src="<%=teamInfo.getLOGO() %>" alt="로고" class="team_logo_img">
-    	</div>
-</header>
-    <div class="a_top">
-        <div class="item" style="background-color: #083660;">
-            <a href="#" onclick="sendTeamNum(<%=session.getAttribute("teamNum")%>, 'admin_player')">선수 관리</a>
-        </div>
-        <div class="item" style="background-color: #236FB5;">
-            <a href="#" onclick="sendTeamNum(<%=session.getAttribute("teamNum")%>, 'teamPage_store')">굿즈샵</a>
-        </div>
-        <div class="item" style="background-color: #236FB5;">
-            <a href="#" onclick="sendTeamNum(<%=session.getAttribute("teamNum")%>, 'teamPage_board')">게시판</a>
+	<header class="header header_logo">
+		<a style="cursor: pointer" onclick="goMain()"><img
+			src=".././assets/images/sportrip_logo.png" alt="sportrip 로고"
+			id="logo_img"></a> <a href=".././sport/sport_main.jsp"
+			style="margin-left: 20px; margin-right: 20px;"> <img
+			src=".././assets/images/sport_logo<%=teamInfo.getSPORT_NUM()%>.svg"
+			alt="리그" id="league_logo_img"></a>
+		<div
+			style="position: absolute; left: 50%; transform: translateX(-50%);"
+			class="img-box">
+			<img src="<%=teamInfo.getLOGO()%>" alt="로고" class="team_logo_img">
+		</div>
+	</header>
+	<div class="a_top">
+		<div class="item" style="background-color: #083660;">
+			<a href="#"
+				onclick="sendTeamNum(<%=session.getAttribute("teamNum")%>, 'admin_player')">선수
+				관리</a>
+		</div>
+		<div class="item" style="background-color: #236FB5;">
+			<a href="#"
+				onclick="sendTeamNum(<%=session.getAttribute("teamNum")%>, 'teamPage_store')">굿즈샵</a>
+		</div>
+		<div class="item" style="background-color: #236FB5;">
+			<a href="#"
+				onclick="sendTeamNum(<%=session.getAttribute("teamNum")%>, 'teamPage_board')">게시판</a>
 		</div>
 	</div>
-	
+
 	<!-- 감독 / 선수 -->
 	<div id="sub_wrap">
 		<div class="u_top">
@@ -77,45 +87,59 @@
 			</div>
 		</div>
 		<div class="update-player">
-			<button class="update-btn" id="delete">삭제</button>
-			<button class="update-btn" id="edit" onclick="editPlayer()")>수정</button>
+			<button class="update-btn" id="delete" onclick="deletePlayer()">삭제</button>
+			<button class="update-btn" id="edit" onclick="editPlayer()" )>수정</button>
 			<button class="update-btn" id="add" onclick="addPlayer()">등록</button>
 		</div>
-		<div id="coach-List" >
-               <div class="coach-card">
-               	<!-- 감독 사진 출력 -->
-                   <img src="<%=coachList.getHEADCOACH_IMG() %>" alt="<%=coachList.getHEADCOACH_NAME() %>" class="coach-photo">
-                   <!-- 감독 이름 출력 -->
-                   <div class="coach-name">
-                       <span> <%=coachList.getHEADCOACH_NAME() %> </span>
-                   </div>
-               </div>
-	    </div>
-	    
-	    <div class="players-section">
-	    	<div id="player-List" style="display: none;">
-	    	<!-- 포지션 버튼 생성 -->
-		    <div class="p_top">
-		        <% for (String position : positionList) { %>
-		            <div class="item" style="background-color: #236FB5;">
-		                <a href="#" onclick="filterByPosition('<%=position%>')"><%= position %></a>
-		            </div>
-		        <% } %>
-		    </div>
-	    	<!-- 선수 리스트 -->
-				<% for (PlayerBean player : playerList) { %>
-				    <div class="player-card" data-position="<%= player.getPOSITION() %>" data-player-num="<%=player.getPLAYER_NUM() %>">
-				        <!-- 선수 사진 출력 -->
-				        <img src="<%=player.getPLAYER_IMG() %>" alt="<%=player.getPLAYER_NAME() %>" class="player-photo">
-				        <!-- 선수 이름, 나이 출력 -->
-				        <div class="player-name">
-				            <span> <%=player.getUNIFORM_NUM() %> </span> <%=player.getPLAYER_NAME() %>
-				        </div>
-				    </div>
-				<% } %>
-        	</div>
-	    </div>
-    </div>
+		<div id="coach-List">
+			<div class="coach-card">
+				<!-- 감독 사진 출력 -->
+				<img src="<%=coachList.getHEADCOACH_IMG()%>"
+					alt="<%=coachList.getHEADCOACH_NAME()%>" class="coach-photo">
+				<!-- 감독 이름 출력 -->
+				<div class="coach-name">
+					<span> <%=coachList.getHEADCOACH_NAME()%>
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="players-section">
+			<div id="player-List" style="display: none;">
+				<!-- 포지션 버튼 생성 -->
+				<div class="p_top">
+					<%
+					for (String position : positionList) {
+					%>
+					<div class="item" style="background-color: #236FB5;">
+						<a href="#" onclick="filterByPosition('<%=position%>')"><%=position%></a>
+					</div>
+					<%
+					}
+					%>
+				</div>
+				<!-- 선수 리스트 -->
+				<%
+				for (PlayerBean player : playerList) {
+				%>
+				<div class="player-card" data-position="<%=player.getPOSITION()%>"
+					data-player-num="<%=player.getPLAYER_NUM()%>">
+					<!-- 선수 사진 출력 -->
+					<img src="<%=player.getPLAYER_IMG()%>"
+						alt="<%=player.getPLAYER_NAME()%>" class="player-photo">
+					<!-- 선수 이름, 나이 출력 -->
+					<div class="player-name">
+						<span> <%=player.getUNIFORM_NUM()%>
+						</span>
+						<%=player.getPLAYER_NAME()%>
+					</div>
+				</div>
+				<%
+				}
+				%>
+			</div>
+		</div>
+	</div>
 	<script>
 	 	function goMain(){
 	        document.location.href=".././sport/mainPage.jsp";
@@ -241,10 +265,31 @@
 		
 		            document.body.appendChild(form);
 		            form.submit();
-		        } else {
+		    } else {
 		            alert("수정할 선수를 선택하세요.");
-		        }
 		    }
+        }
+
+		function deletePlayer() {
+
+		    const params = new URLSearchParams();
+		    params.append('selectedPlayerNum', selectedPlayerNum);
+
+		    fetch('delete_player.jsp?' + params.toString(), {
+		        method: 'GET', // Change to GET for testing
+		    })
+		    .then(response => response.text())
+		    .then(data => {
+		        console.log("Response:", data); // Log the response for debugging
+		        if (data.includes("success")) { 
+		            alert('선수 삭제가 완료되었습니다.');
+		            location.href = "admin_player.jsp"; 
+		        } else {
+		            alert('선수 삭제가 되지 않았습니다.');
+		        }
+		    })
+		    .catch(error => console.error('Error:', error));
+		}
 
 
 	  </script>
